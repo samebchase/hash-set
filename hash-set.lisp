@@ -8,7 +8,7 @@ can be installed using Quicklisp.
 |#
 
 (defclass hash-set ()
-  ((table :accessor table :initform (make-hash-table))
+  ((table :accessor table :initform (make-hash-table :test #'equalp))
    (size  :accessor size :initform 0))
   (:documentation "A hashset."))
 
@@ -53,6 +53,8 @@ can be installed using Quicklisp.
            (let ((value (nth-value 1 (iterator))))
              (hs-insert result (funcall fn value)))))
     result))
+
+;; (defmacro dohashset (hashset)
 
 (defun hs-union (hs-a hs-b)
   (let ((count-a (hs-count hs-a))
