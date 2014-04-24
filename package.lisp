@@ -5,7 +5,9 @@
 (defpackage #:hash-set
   (:use #:cl)
   (:export #:hash-set
+           #:dohashset
            #:list-to-hs
+           #:hs-to-list
            #:hs-copy
            #:hs-equal
            #:hs-memberp
