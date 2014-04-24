@@ -54,7 +54,12 @@ can be installed using Quicklisp.
              (hs-insert result (funcall fn value)))))
     result))
 
-;; (defmacro dohashset (hashset)
+(defmacro dohashset ((var hash-set &optional result) &body body)
+  ;; magic due to pjb from #lisp
+  `(block nil (hs-map ,hash-set
+                      (lambda (,var)
+                        (tagbody ,@body))) 
+          ,result))
 
 (defun hs-union (hs-a hs-b)
   (let ((count-a (hs-count hs-a))
