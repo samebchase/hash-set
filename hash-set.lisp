@@ -35,6 +35,13 @@ can be installed using Quicklisp.
              (hs-insert hash-set elt)))
     hash-set))
 
+(defun hs-filter (fn hash-set)
+  (let ((result (make-instance 'hash-set)))
+    (dohashset (elt hash-set)
+      (when (funcall fn elt)
+        (hs-insert result elt)))
+    result))
+
 (defun hs-to-list (hash-set)
   (let ((result ()))
     (dohashset (elt hash-set)

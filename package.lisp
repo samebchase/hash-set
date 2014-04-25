@@ -15,6 +15,7 @@
            #:hs-insert
            #:hs-delete
            #:hs-map
+           #:hs-filter
            #:hs-count
            #:hs-union
            #:hs-intersection
