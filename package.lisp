@@ -11,6 +11,7 @@
            #:hs-copy
            #:hs-equal
            #:hs-memberp
+           #:hs-emptyp
            #:hs-insert
            #:hs-delete
            #:hs-map

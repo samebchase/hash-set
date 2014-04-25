@@ -57,7 +57,10 @@ can be installed using Quicklisp.
     (decf (size hash-set))))
 
 (defun hs-count (hash-set)
-  (size hash-set))  
+  (size hash-set))
+
+(defun hs-emptyp (hash-set)
+  (= 0 (hs-count hash-set)))
 
 (defun hs-union (hs-a hs-b)
   (let ((result (make-instance 'hash-set)))
