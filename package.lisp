@@ -3,6 +3,7 @@
 (defpackage #:hash-set
   (:use #:cl)
   (:export #:hash-set
+           #:make-hash-set
            #:list-to-hs
            #:hs-to-list
 

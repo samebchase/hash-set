@@ -12,8 +12,11 @@ can be installed using Quicklisp.
    (size  :accessor size :initform 0))
   (:documentation "A hashset."))
 
+(defun make-hash-set ()
+  (make-instance 'hash-set))
+
 (defun hs-map (fn hash-set)
-  (let ((result (make-instance 'hash-set)))
+  (let ((result (make-hash-set)))
     (with-hash-table-iterator (iterator (table hash-set))
       (loop for i from 1 to (hs-count hash-set) do
            (let ((value (nth-value 1 (iterator))))
@@ -28,7 +31,7 @@ can be installed using Quicklisp.
           ,result))
 
 (defun list-to-hs (list)
-  (let ((hash-set (make-instance 'hash-set)))
+  (let ((hash-set (make-hash-set)))
     (loop for elt in list do
          (if (consp elt)
              (hs-insert hash-set (list-to-hs elt))
@@ -36,7 +39,7 @@ can be installed using Quicklisp.
     hash-set))
 
 (defun hs-filter (fn hash-set)
-  (let ((result (make-instance 'hash-set)))
+  (let ((result (make-hash-set)))
     (dohashset (elt hash-set)
       (when (funcall fn elt)
         (hs-insert result elt)))
@@ -70,7 +73,7 @@ can be installed using Quicklisp.
   (= 0 (hs-count hash-set)))
 
 (defun hs-union (hs-a hs-b)
-  (let ((result (make-instance 'hash-set)))
+  (let ((result (make-hash-set)))
     (dohashset (elt hs-a)
       (hs-insert result elt))
     (dohashset (elt hs-b)
@@ -78,7 +81,7 @@ can be installed using Quicklisp.
     result))
     
 (defun hs-intersection (hs-a hs-b)
-  (let ((result (make-instance 'hash-set)))
+  (let ((result (make-hash-set)))
     (dohashset (elt hs-a)
       (when (hs-memberp hs-b elt)
         (hs-insert result elt)))
@@ -94,7 +97,7 @@ can be installed using Quicklisp.
         t)))
 
 (defun hs-copy (hash-set)
-  (let ((hs-copy (make-instance 'hash-set)))
+  (let ((hs-copy (make-hash-set)))
     (dohashset (elt hash-set)
       (hs-insert hs-copy elt))
     hs-copy))
@@ -110,7 +113,7 @@ can be installed using Quicklisp.
             (hs-difference hs-b hs-a)))
 
 (defun %one-bit-positions (n)
-  (let ((result (make-instance 'hash-set)))
+  (let ((result (make-hash-set)))
     (loop for i from 0 below (integer-length n)
        for one-bitp = (logbitp i n)
        when one-bitp
@@ -118,12 +121,12 @@ can be installed using Quicklisp.
     result))
 
 (defun hs-powerset (hash-set)
-  (let ((result (make-instance 'hash-set))
+  (let ((result (make-hash-set))
         (result-length (expt 2 (hs-count hash-set)))
         (indexed-set-table (make-hash-table :test 'equal))
         (idx 0))
     (flet ((subset-from-bit-repr-int (bit-repr-int)
-             (let ((result (make-instance 'hash-set)))
+             (let ((result (make-hash-set)))
                (dohashset (var (%one-bit-positions bit-repr-int))
                  (hs-insert result (gethash var indexed-set-table)))
                result)))
@@ -135,7 +138,7 @@ can be installed using Quicklisp.
     result))
 
 (defun hs-cartesian-product (hs-a hs-b)
-  (let ((result (make-instance 'hash-set)))
+  (let ((result (make-hash-set)))
     (dohashset (elt-a hs-a)
       (dohashset (elt-b hs-b)
         (hs-insert result (list elt-a elt-b))))
