@@ -109,11 +109,37 @@ can be installed using Quicklisp.
   (hs-union (hs-difference hs-a hs-b)
             (hs-difference hs-b hs-a)))
 
-;; (defun hs-cartesian-product (hs-a hs-b) 1
-;; nil)
+(defun %one-bit-positions (n)
+  (let ((result (make-instance 'hash-set)))
+    (loop for i from 0 below (integer-length n)
+       for one-bitp = (logbitp i n)
+       when one-bitp
+       do (hs-insert result i))
+    result))
 
-;; (defun hs-powerset (hash-set)
-;;   nil)
+(defun hs-powerset (hash-set)
+  (let ((result (make-instance 'hash-set))
+        (result-length (expt 2 (hs-count hash-set)))
+        (indexed-set-table (make-hash-table :test 'equal))
+        (idx 0))
+    (flet ((subset-from-bit-repr-int (bit-repr-int)
+             (let ((result (make-instance 'hash-set)))
+               (dohashset (var (%one-bit-positions bit-repr-int))
+                 (hs-insert result (gethash var indexed-set-table)))
+               result)))
+      (dohashset (var hash-set)
+        (setf (gethash idx indexed-set-table) var)
+        (incf idx))
+      (loop for bit-repr from 0 below result-length
+         do (hs-insert result (subset-from-bit-repr-int bit-repr))))
+    result))
+
+(defun hs-cartesian-product (hs-a hs-b)
+  (let ((result (make-instance 'hash-set)))
+    (dohashset (elt-a hs-a)
+      (dohashset (elt-b hs-b)
+        (hs-insert result (list elt-a elt-b))))
+    result))
 
 (defmethod print-object ((hash-set hash-set) stream)
   (print-unreadable-object (hash-set stream :identity t :type t)

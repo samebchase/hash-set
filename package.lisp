@@ -1,28 +1,31 @@
-;;;; package.lisp
-
 (in-package :cl-user)
 
 (defpackage #:hash-set
   (:use #:cl)
   (:export #:hash-set
-           #:dohashset
            #:list-to-hs
            #:hs-to-list
+
            #:hs-copy
            #:hs-equal
            #:hs-memberp
            #:hs-emptyp
+
            #:hs-insert
            #:hs-delete
+
            #:hs-map
            #:hs-filter
+           #:dohashset
            #:hs-count
+
            #:hs-union
-           #:hs-intersection
-           #:hs-cartesian-product
            #:hs-powerset
            #:hs-difference
+           #:hs-intersection
+           #:hs-cartesian-product
            #:hs-symmetric-difference
+
            #:hs-pretty-print))
 
 (defpackage #:hash-set-test
