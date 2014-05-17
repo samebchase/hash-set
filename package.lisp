@@ -24,9 +24,7 @@
            #:hs-difference
            #:hs-intersection
            #:hs-cartesian-product
-           #:hs-symmetric-difference
-
-           #:hs-pretty-print))
+           #:hs-symmetric-difference))
 
 (defpackage #:hash-set-test
   (:use #:cl
