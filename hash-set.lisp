@@ -123,11 +123,27 @@ can be installed using Quicklisp.
 (defun hs-subsetp (hs-subset hs-superset)
   "Returns T when hs-subset is a subset of hs-superset."
   (let ((return-value t))
-    (dohashset (elt hs-subset)
-      (when (not (hs-memberp hs-superset elt))
+    (dohashset (subset-elt hs-subset)
+      (unless (hs-memberp hs-superset subset-elt)
         (setf return-value nil)
         (return)))
   return-value))
+
+(defun hs-any (hash-set predicate)
+  (let ((return-value nil))
+    (dohashset (elt hash-set)
+      (when (funcall predicate elt)
+        (setf return-value t)
+        (return)))
+    return-value))
+
+(defun hs-all (hash-set predicate)
+  (let ((return-value t))
+    (dohashset (elt hash-set)
+      (unless (funcall predicate elt)
+        (setf return-value nil)
+        (return)))
+    return-value))
 
 (defun hs-powerset (hash-set)
   "Generates the powerset of hash-set."
