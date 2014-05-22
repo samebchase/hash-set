@@ -15,12 +15,15 @@
            #:hs-insert
            #:hs-delete
 
+           #:hs-any
+           #:hs-all
            #:hs-map
            #:hs-filter
            #:dohashset
-           #:hs-count
 
+           #:hs-count
            #:hs-union
+           #:hs-subsetp
            #:hs-powerset
            #:hs-difference
            #:hs-intersection

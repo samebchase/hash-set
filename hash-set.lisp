@@ -120,7 +120,17 @@ can be installed using Quicklisp.
        do (hs-insert result i))
     result))
 
+(defun hs-subsetp (hs-subset hs-superset)
+  "Returns T when hs-subset is a subset of hs-superset."
+  (let ((return-value t))
+    (dohashset (elt hs-subset)
+      (when (not (hs-memberp hs-superset elt))
+        (setf return-value nil)
+        (return)))
+  return-value))
+
 (defun hs-powerset (hash-set)
+  "Generates the powerset of hash-set."
   (let ((result (make-hash-set))
         (result-length (expt 2 (hs-count hash-set)))
         (indexed-set-table (make-hash-table :test 'equal))
