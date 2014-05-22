@@ -61,10 +61,20 @@ can be installed using Quicklisp.
     (push item (gethash item (table hash-set)))
     (incf (size hash-set))))
 
-(defun hs-delete (hash-set item)
+(defun hs-remove (hash-set item)
   (when (hs-memberp hash-set item)
     (remhash item (table hash-set))
     (decf (size hash-set))))
+
+(defun hs-remove-if (hash-set predicate)
+  (dohashset (elt hash-set)
+    (when (funcall predicate elt)
+      (hs-remove hash-set elt))))
+
+(defun hs-remove-if-not (hash-set predicate)
+  (dohashset (elt hash-set)
+    (unless (funcall predicate elt)
+      (hs-remove hash-set elt))))
 
 (defun hs-count (hash-set)
   (size hash-set))
@@ -105,7 +115,7 @@ can be installed using Quicklisp.
 (defun hs-difference (hs-a hs-b)
   (let ((result (hs-copy hs-a)))
     (dohashset (elt hs-b)
-      (hs-delete result elt))
+      (hs-remove result elt))
     result))
 
 (defun hs-symmetric-difference (hs-a hs-b)

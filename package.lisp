@@ -13,7 +13,9 @@
            #:hs-emptyp
 
            #:hs-insert
-           #:hs-delete
+           #:hs-remove
+           #:hs-remove-if
+           #:hs-remove-if-not
 
            #:hs-any
            #:hs-all

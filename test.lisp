@@ -19,14 +19,14 @@
            (hs-insert hash-set i)))
     (is (= 10 (hs-count hash-set)))))
 
-(test hs-delete-count
+(test hs-remove-count
   (let ((hash-set (make-instance 'hash-set)))
     (dotimes (i 100)
       (hs-insert hash-set i))
     (loop for i from 10 below 20 do
-         (hs-delete hash-set i))
+         (hs-remove hash-set i))
     (hs-insert hash-set 15)
-    (hs-delete hash-set 15)
+    (hs-remove hash-set 15)
     (is (= 90 (hs-count hash-set)))))
 
 (test hs-equality
