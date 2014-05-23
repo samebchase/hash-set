@@ -26,6 +26,7 @@
            #:hs-count
            #:hs-union
            #:hs-subsetp
+           #:hs-supersetp
            #:hs-powerset
            #:hs-difference
            #:hs-intersection

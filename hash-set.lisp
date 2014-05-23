@@ -89,7 +89,7 @@ can be installed using Quicklisp.
     (dohashset (elt hs-b)
       (hs-insert result elt))
     result))
-    
+
 (defun hs-intersection (hs-a hs-b)
   (let ((result (make-hash-set)))
     (dohashset (elt hs-a)
@@ -137,7 +137,10 @@ can be installed using Quicklisp.
       (unless (hs-memberp hs-superset subset-elt)
         (setf return-value nil)
         (return)))
-  return-value))
+    return-value))
+
+(defun hs-supersetp (hs-superset hs-subset)
+  (hs-subsetp hs-subset hs-superset))
 
 (defun hs-any (hash-set predicate)
   (let ((return-value nil))
