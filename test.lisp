@@ -9,47 +9,47 @@
 
 (test hs-memberp
   (let ((hash-set (make-instance 'hash-set)))
-    (hs-insert hash-set 42)
+    (hs-ninsert hash-set 42)
     (is (hs-memberp hash-set 42))))
 
-(test hs-insert-count
+(test hs-ninsert-count
   (let ((hash-set (make-instance 'hash-set)))
     (loop repeat 3 do
          (dotimes (i 10)
-           (hs-insert hash-set i)))
+           (hs-ninsert hash-set i)))
     (is (= 10 (hs-count hash-set)))))
 
-(test hs-insert
+(test hs-ninsert
   (let ((hash-set (list-to-hs '(1 2 3 4))))
-    (hs-insert hash-set 5)
+    (hs-ninsert hash-set 5)
     (is (hs-equal hash-set
                   (list-to-hs '(1 2 3 4 5))))))
 
-(test hs-remove-count
+(test hs-nremove-count
   (let ((hash-set (make-instance 'hash-set)))
     (dotimes (i 100)
-      (hs-insert hash-set i))
+      (hs-ninsert hash-set i))
     (loop for i from 10 below 20 do
-         (hs-remove hash-set i))
-    (hs-insert hash-set 15)
-    (hs-remove hash-set 15)
+         (hs-nremove hash-set i))
+    (hs-ninsert hash-set 15)
+    (hs-nremove hash-set 15)
     (is (= 90 (hs-count hash-set)))))
 
-(test hs-remove
+(test hs-nremove
   (let ((hash-set (list-to-hs '(1 2 3 4))))
-    (hs-remove hash-set 3)
+    (hs-nremove hash-set 3)
     (is (hs-equal hash-set
                   (list-to-hs '(1 2 4))))))
 
-(test hs-remove-if
+(test hs-nremove-if
   (let ((hash-set (list-to-hs (alexandria:iota 10))))
-    (hs-remove-if hash-set #'evenp)
+    (hs-nremove-if hash-set #'evenp)
     (is (hs-equal hash-set
                   (list-to-hs (alexandria:iota 5 :start 1 :step 2))))))
 
-(test hs-remove-if-not
+(test hs-nremove-if-not
   (let ((hash-set (list-to-hs (alexandria:iota 10))))
-    (hs-remove-if hash-set #'oddp)
+    (hs-nremove-if hash-set #'oddp)
     (is (hs-equal hash-set
                   (list-to-hs (alexandria:iota 5 :start 1 :step 2))))))
 
@@ -140,16 +140,4 @@
   (is (hs-equal (hs-powerset (list-to-hs '(1 2 3)))
                 (list-to-hs '(NIL (1) (2) (1 2) (3) (1 3) (2 3) (1 2 3)))))
   (is (hs-equal (hs-powerset (list-to-hs '()))
-                (list-to-hs '(())))))                             
-
-
-
-
-
-
-
-
-
-
-
-
+                (list-to-hs '(())))))

@@ -20,7 +20,7 @@ can be installed using Quicklisp.
     (with-hash-table-iterator (iterator (table hash-set))
       (loop for i from 1 to (hs-count hash-set) do
            (let ((value (nth-value 1 (iterator))))
-             (hs-insert result (funcall fn value)))))
+             (hs-ninsert result (funcall fn value)))))
     result))
 
 (defmacro dohashset ((var hash-set &optional result) &body body)
@@ -34,15 +34,15 @@ can be installed using Quicklisp.
   (let ((hash-set (make-hash-set)))
     (loop for elt in list do
          (if (consp elt)
-             (hs-insert hash-set (list-to-hs elt))
-             (hs-insert hash-set elt)))
+             (hs-ninsert hash-set (list-to-hs elt))
+             (hs-ninsert hash-set elt)))
     hash-set))
 
 (defun hs-filter (fn hash-set)
   (let ((result (make-hash-set)))
     (dohashset (elt hash-set)
       (when (funcall fn elt)
-        (hs-insert result elt)))
+        (hs-ninsert result elt)))
     result))
 
 (defun hs-to-list (hash-set)
@@ -57,24 +57,56 @@ can be installed using Quicklisp.
   (gethash item (table hash-set)))
 
 (defun hs-insert (hash-set item)
+  (let ((result (hs-copy hash-set)))
+    (unless (hs-memberp result item)
+      (push item (gethash item (table result)))
+      (incf (size result)))
+    result))
+
+(defun hs-ninsert (hash-set item)
   (unless (hs-memberp hash-set item)
     (push item (gethash item (table hash-set)))
-    (incf (size hash-set))))
+    (incf (size hash-set)))
+  hash-set)
 
 (defun hs-remove (hash-set item)
+  (let ((result (hs-copy hash-set)))
+    (when (hs-memberp result item)
+      (remhash item (table result))
+      (decf (size result)))
+    result))
+
+(defun hs-nremove (hash-set item)
   (when (hs-memberp hash-set item)
     (remhash item (table hash-set))
-    (decf (size hash-set))))
+    (decf (size hash-set)))
+  hash-set)
 
 (defun hs-remove-if (hash-set predicate)
+  (let ((result hash-set))
+    (dohashset (elt result)
+      (when (funcall predicate elt)
+        (hs-nremove result elt)))
+    result))
+
+(defun hs-nremove-if (hash-set predicate)
   (dohashset (elt hash-set)
     (when (funcall predicate elt)
-      (hs-remove hash-set elt))))
+      (hs-nremove hash-set elt)))
+  hash-set)
 
 (defun hs-remove-if-not (hash-set predicate)
+  (let ((result hash-set))
+    (dohashset (elt result)
+      (unless (funcall predicate elt)
+        (hs-nremove result elt)))
+    result))
+
+(defun hs-nremove-if-not (hash-set predicate)
   (dohashset (elt hash-set)
     (unless (funcall predicate elt)
-      (hs-remove hash-set elt))))
+      (hs-nremove hash-set elt)))
+  hash-set)
 
 (defun hs-count (hash-set)
   (size hash-set))
@@ -85,17 +117,29 @@ can be installed using Quicklisp.
 (defun hs-union (hs-a hs-b)
   (let ((result (make-hash-set)))
     (dohashset (elt hs-a)
-      (hs-insert result elt))
+      (hs-ninsert result elt))
     (dohashset (elt hs-b)
-      (hs-insert result elt))
+      (hs-ninsert result elt))
     result))
+
+(defun hs-nunion (hs-a hs-b)
+  (dohashset (elt hs-b)
+    (unless (hs-memberp hs-a elt)
+      (hs-ninsert elt hs-a)))
+  hs-a)
 
 (defun hs-intersection (hs-a hs-b)
   (let ((result (make-hash-set)))
     (dohashset (elt hs-a)
       (when (hs-memberp hs-b elt)
-        (hs-insert result elt)))
+        (hs-ninsert result elt)))
     result))
+
+(defun hs-nintersection (hs-a hs-b)
+  (dohashset (elt hs-a)
+    (unless (hs-memberp hs-b elt)
+      (hs-nremove hs-a elt)))
+  hs-a)
 
 (defun hs-equal (hs-a hs-b)
   (if (/= (hs-count hs-a) (hs-count hs-b))
@@ -109,14 +153,19 @@ can be installed using Quicklisp.
 (defun hs-copy (hash-set)
   (let ((hs-copy (make-hash-set)))
     (dohashset (elt hash-set)
-      (hs-insert hs-copy elt))
+      (hs-ninsert hs-copy elt))
     hs-copy))
 
 (defun hs-difference (hs-a hs-b)
   (let ((result (hs-copy hs-a)))
     (dohashset (elt hs-b)
-      (hs-remove result elt))
+      (hs-nremove result elt))
     result))
+
+(defun hs-ndifference (hs-a hs-b)
+  (dohashset (elt hs-b)
+    (hs-nremove hs-a elt))
+  hs-a)
 
 (defun hs-symmetric-difference (hs-a hs-b)
   (hs-union (hs-difference hs-a hs-b)
@@ -127,7 +176,7 @@ can be installed using Quicklisp.
     (loop for i from 0 below (integer-length n)
        for one-bitp = (logbitp i n)
        when one-bitp
-       do (hs-insert result i))
+       do (hs-ninsert result i))
     result))
 
 (defun hs-subsetp (hs-subset hs-superset)
@@ -139,8 +188,15 @@ can be installed using Quicklisp.
         (return)))
     return-value))
 
+(defun hs-proper-subsetp (hs-subset hs-superset)
+  (and (hs-subsetp hs-subset hs-superset)
+       (> (hs-count hs-superset) (hs-count hs-subset))))
+
 (defun hs-supersetp (hs-superset hs-subset)
   (hs-subsetp hs-subset hs-superset))
+
+(defun hs-proper-supersetp (hs-superset hs-subset)
+  (hs-proper-subsetp hs-subset hs-superset))
 
 (defun hs-any (hash-set predicate)
   (let ((return-value nil))
@@ -167,20 +223,20 @@ can be installed using Quicklisp.
     (flet ((subset-from-bit-repr-int (bit-repr-int)
              (let ((result (make-hash-set)))
                (dohashset (var (%one-bit-positions bit-repr-int))
-                 (hs-insert result (gethash var indexed-set-table)))
+                 (hs-ninsert result (gethash var indexed-set-table)))
                result)))
       (dohashset (var hash-set)
         (setf (gethash idx indexed-set-table) var)
         (incf idx))
       (loop for bit-repr from 0 below result-length
-         do (hs-insert result (subset-from-bit-repr-int bit-repr))))
+         do (hs-ninsert result (subset-from-bit-repr-int bit-repr))))
     result))
 
 (defun hs-cartesian-product (hs-a hs-b)
   (let ((result (make-hash-set)))
     (dohashset (elt-a hs-a)
       (dohashset (elt-b hs-b)
-        (hs-insert result (list elt-a elt-b))))
+        (hs-ninsert result (list elt-a elt-b))))
     result))
 
 (defmethod print-object ((hash-set hash-set) stream)

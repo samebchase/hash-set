@@ -13,9 +13,16 @@
            #:hs-emptyp
 
            #:hs-insert
+           #:hs-ninsert
+
            #:hs-remove
+           #:hs-nremove
+
            #:hs-remove-if
+           #:hs-nremove-if
+
            #:hs-remove-if-not
+           #:hs-nremove-if-not
 
            #:hs-any
            #:hs-all
@@ -24,14 +31,25 @@
            #:dohashset
 
            #:hs-count
+
            #:hs-union
-           #:hs-subsetp
-           #:hs-supersetp
-           #:hs-powerset
-           #:hs-difference
+           #:hs-nunion
+
            #:hs-intersection
+           #:hs-nintersection
+
+           #:hs-difference
+           #:hs-ndifference
+
+           #:hs-symmetric-difference
+
            #:hs-cartesian-product
-           #:hs-symmetric-difference))
+
+           #:hs-subsetp
+           #:hs-proper-subsetp
+           #:hs-supersetp
+           #:hs-proper-supersetp
+           #:hs-powerset))
 
 (defpackage #:hash-set-test
   (:use #:cl
