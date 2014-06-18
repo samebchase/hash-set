@@ -3,7 +3,7 @@
 hash-set is an implementation of the hash-set data structure. It has
 constant time lookup, insertion and deletion.
 
-### Usage
+Basic usage:
 
 1. Assuming you use Quicklisp, clone this repo into your
 ```$QUICKLISP-DIR/local-projects```.
