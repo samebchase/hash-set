@@ -306,6 +306,24 @@ HASH-SET> (hs-to-list (hs-cartesian-product (list-to-hs (alexandria:iota 3 :star
 
 For even more usage examples please see ```test.lisp```.
 
+### Running the tests
+
+```lisp
+CL-USER> (ql:quickload 'hash-set)
+To load "hash-set":
+  Load 1 ASDF system:
+    hash-set
+; Loading "hash-set"
+..
+(HASH-SET)
+CL-USER> (in-package :hash-set-test)
+#<PACKAGE "HASH-SET-TEST">
+HASH-SET-TEST> (run!)
+
+Running test suite ALL-TESTS
+...
+```
+
 ### Credits
 
 Engineering guidance taken from Robert Smith's
