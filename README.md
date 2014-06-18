@@ -19,7 +19,7 @@ version of ```hs-insert``` is ```hs-ninsert```.
 
 ##### make-hash-set : ```() -> hash-set```
 
-Creates a new hash-set
+Creates a new hash-set.
 
 ```lisp
 (let ((hash-set (make-hash-set)))
@@ -38,7 +38,7 @@ HASH-SET> (list-to-hs (alexandria:iota 10))
 
 ##### hs-to-list : ```hash-set -> list```
 
-Creates a list containing all the elements of the hash-set
+Creates a list containing all the elements of the hash-set.
 
 ```lisp
 HASH-SET> (hs-to-list (list-to-hs (alexandria:iota 10)))
@@ -112,7 +112,8 @@ NIL
 
 ##### hs-map : ```function hash-set -> hash-set```
 
-Maps a function over a hash-set and returns a hash-set containing all the mapped values.
+Maps a function over a hash-set and returns a hash-set containing all
+the mapped values.
 
 ```lisp
 HASH-SET> (hs-to-list (hs-map (lambda (x) (* x x))
@@ -155,7 +156,8 @@ HASH-SET> (let ((hash-set (list-to-hs '(1 2 3 4))))
 
 ##### hs-remove : ```hash-set elt -> hash-set```
 
-Returns a copy of the hash-set, but with the element ```elt``` removed from it.
+Returns a copy of the hash-set, but with the ```elt``` removed from
+it.
 
 ```lisp
 HASH-SET> (hs-to-list (hs-remove (list-to-hs '(4 5 6 7)) 5))
@@ -240,7 +242,8 @@ intersection of ```hash-set-a``` and ```hash-set-b```.
 
 ##### hs-difference : ```hash-set-a hash-set-b -> hash-set```
 
-Returns a hash-set that is the set-difference of ```hash-set-a``` and ```hash-set-b```.
+Returns a hash-set that is the set-difference of ```hash-set-a``` and
+```hash-set-b```.
 
 ```lisp
 HASH-SET> (hs-to-list (hs-intersection (list-to-hs '(1 2 3 4))
@@ -274,7 +277,8 @@ T
 
 ##### hs-proper-subsetp : ```hash-set-a hash-set-b -> bool```
 
-Returns ```t``` if ```hash-set-a``` is a proper-subset of ```hash-set-b```.
+Returns ```t``` if ```hash-set-a``` is a proper-subset of
+```hash-set-b```.
 
 ##### hs-supersetp : ```hash-set-a hash-set-b -> bool```
 
@@ -282,7 +286,8 @@ Returns ```t``` if ```hash-set-a``` is a superset of ```hash-set-b```.
 
 ##### hs-proper-supersetp : ```hash-set-a hash-set-b -> bool```
 
-Returns ```t``` if ```hash-set-a``` is a proper-superset of ```hash-set-b```.
+Returns ```t``` if ```hash-set-a``` is a proper-superset of
+```hash-set-b```.
 
 ##### hs-powerset : ```hash-set -> hash-set```
 
