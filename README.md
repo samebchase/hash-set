@@ -169,7 +169,8 @@ Removes the element ```elt``` from the hash-set.
 ##### hs-remove-if : ```predicate hash-set -> hash-set```
 
 ```lisp
-HASH-SET> (hs-to-list (hs-remove-if #'evenp (list-to-hs (alexandria:iota 10))))
+HASH-SET> (hs-to-list (hs-remove-if #'evenp
+                                    (list-to-hs (alexandria:iota 10))))
 (1 3 5 7 9)
 ```
 
