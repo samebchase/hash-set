@@ -66,7 +66,7 @@
     result))
 
 (defun hs-memberp (hash-set item)
-  (gethash item (table hash-set)))
+  (nth-value 1 (gethash item (table hash-set))))
 
 (defun hs-insert (hash-set item)
   (let ((result (hs-copy hash-set)))

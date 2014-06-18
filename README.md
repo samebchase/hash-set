@@ -89,13 +89,11 @@ T
 Predicate that tests the existence of an element in the hash-set.
 
 ```lisp
-HASH-SET> (let ((hash-set (list-to-hs '(1 2 3 4))))
-            (hs-memberp hash-set 4))
-(4)
+HASH-SET-TEST> (let ((hash-set (list-to-hs '(1 2 3 4))))
+                 (hs-memberp hash-set 4))
 T
-HASH-SET> (let ((hash-set (list-to-hs '(1 2 3 4))))
-            (hs-memberp hash-set 8))
-NIL
+HASH-SET-TEST> (let ((hash-set (list-to-hs '(1 2 3 4))))
+                 (hs-memberp hash-set 8))
 NIL
 ```
 
