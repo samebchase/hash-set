@@ -123,12 +123,7 @@ HASH-SET> (hs-to-list (hs-filter #'oddp
 
 Do something with each element of the hash-set.
 
-```lisp
-
-HASH-SET> (hs-to-list (hs-cartesian-product (list-to-hs (alexandria:iota 3 :start 1))
-                                            (list-to-hs (alexandria:iota 3 :start 10))))
-((1 10) (1 11) (1 12) (2 10) (2 11) (2 12) (3 10) (3 11) (3 12))
-```
+#### Insertion/Deletion
 
 ##### hs-insert : ```hash-set elt -> hash-set```
 
@@ -188,6 +183,8 @@ of the hash-set.
 
 The elements testing false with the predicate are removed from the
 hash-set.
+
+#### Set operations
 
 ##### hs-any : ```predicate hash-set -> bool```
 
