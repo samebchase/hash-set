@@ -242,8 +242,7 @@ intersection of ```hash-set-a``` and ```hash-set-b```.
 
 ##### hs-difference : ```hash-set-a hash-set-b -> hash-set```
 
-Returns a hash-set that is the set-difference of ```hash-set-a``` and
-```hash-set-b```.
+Returns a hash-set that is the set-difference of ```hash-set-a``` and ```hash-set-b```.
 
 ```lisp
 HASH-SET> (hs-to-list (hs-intersection (list-to-hs '(1 2 3 4))
@@ -260,7 +259,7 @@ set-difference of ```hash-set-a``` and ```hash-set-b```.
 
 Returns a hash-set with the common elements removed.
 
-```
+```lisp
 HASH-SET> (hs-to-list (hs-symmetric-difference (list-to-hs '(1 2 3 4))
                                                (list-to-hs '(3 4 5 6))))
 (1 2 5 6)
@@ -277,8 +276,7 @@ T
 
 ##### hs-proper-subsetp : ```hash-set-a hash-set-b -> bool```
 
-Returns ```t``` if ```hash-set-a``` is a proper-subset of
-```hash-set-b```.
+Returns ```t``` if ```hash-set-a``` is a proper-subset of ```hash-set-b```.
 
 ##### hs-supersetp : ```hash-set-a hash-set-b -> bool```
 
@@ -286,8 +284,7 @@ Returns ```t``` if ```hash-set-a``` is a superset of ```hash-set-b```.
 
 ##### hs-proper-supersetp : ```hash-set-a hash-set-b -> bool```
 
-Returns ```t``` if ```hash-set-a``` is a proper-superset of
-```hash-set-b```.
+Returns ```t``` if ```hash-set-a``` is a proper-superset of ```hash-set-b```.
 
 ##### hs-powerset : ```hash-set -> hash-set```
 
