@@ -46,6 +46,12 @@ can be installed using Quicklisp.
           (push elt result)))
     (nreverse result)))
 
+(defun hs-count (hash-set)
+  (size hash-set))
+
+(defun hs-emptyp (hash-set)
+  (= 0 (hs-count hash-set)))
+
 (defun hs-equal (hs-a hs-b)
   (if (/= (hs-count hs-a) (hs-count hs-b))
       nil
@@ -123,12 +129,6 @@ can be installed using Quicklisp.
       (hs-nremove hash-set elt)))
   hash-set)
 
-(defun hs-count (hash-set)
-  (size hash-set))
-
-(defun hs-emptyp (hash-set)
-  (= 0 (hs-count hash-set)))
-
 (defun hs-union (hs-a hs-b)
   (let ((result (hs-copy hs-a)))
     (dohashset (elt hs-b)
@@ -169,14 +169,6 @@ can be installed using Quicklisp.
   (hs-union (hs-difference hs-a hs-b)
             (hs-difference hs-b hs-a)))
 
-(defun %one-bit-positions (n)
-  (let ((result (make-hash-set)))
-    (loop for i from 0 below (integer-length n)
-       for one-bitp = (logbitp i n)
-       when one-bitp
-       do (hs-ninsert result i))
-    result))
-
 (defun hs-subsetp (hs-subset hs-superset)
   "Returns T when hs-subset is a subset of hs-superset."
   (let ((return-value t))
@@ -211,6 +203,14 @@ can be installed using Quicklisp.
         (setf return-value nil)
         (return)))
     return-value))
+
+(defun %one-bit-positions (n)
+  (let ((result (make-hash-set)))
+    (loop for i from 0 below (integer-length n)
+       for one-bitp = (logbitp i n)
+       when one-bitp
+       do (hs-ninsert result i))
+    result))
 
 (defun hs-powerset (hash-set)
   "Generates the powerset of hash-set."
