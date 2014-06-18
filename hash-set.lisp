@@ -17,10 +17,8 @@ can be installed using Quicklisp.
 
 (defun hs-map (fn hash-set)
   (let ((result (make-hash-set)))
-    (with-hash-table-iterator (iterator (table hash-set))
-      (loop for i from 1 to (hs-count hash-set) do
-           (let ((value (nth-value 1 (iterator))))
-             (hs-ninsert result (funcall fn value)))))
+    (loop for key being the hash-keys of (table hash-set)
+       do (hs-ninsert result (funcall fn key)))
     result))
 
 (defmacro dohashset ((var hash-set &optional result) &body body)
@@ -80,13 +78,13 @@ can be installed using Quicklisp.
 (defun hs-insert (hash-set item)
   (let ((result (hs-copy hash-set)))
     (unless (hs-memberp result item)
-      (push item (gethash item (table result)))
+      (push t (gethash item (table result)))
       (incf (size result)))
     result))
 
 (defun hs-ninsert (hash-set item)
   (unless (hs-memberp hash-set item)
-    (push item (gethash item (table hash-set)))
+    (push t (gethash item (table hash-set)))
     (incf (size hash-set)))
   hash-set)
 
