@@ -99,6 +99,17 @@ NIL
 NIL
 ```
 
+##### dohashset
+
+Do something with each element of the hash-set.
+
+```lisp
+HASH-SET> (dohashset (elt (list-to-hs (alexandria:iota 10)))
+            (princ elt))
+0123456789
+NIL
+```
+
 ##### hs-map : ```function hash-set -> hash-set```
 
 Maps a function over a hash-set and returns a hash-set containing all the mapped values.
@@ -118,10 +129,6 @@ HASH-SET> (hs-to-list (hs-filter #'oddp
                                  (list-to-hs (alexandria:iota 10))))
 (1 3 5 7 9)
 ```
-
-##### dohashset
-
-Do something with each element of the hash-set.
 
 #### Insertion/Deletion
 
@@ -150,7 +157,7 @@ HASH-SET> (let ((hash-set (list-to-hs '(1 2 3 4))))
 
 Returns a copy of the hash-set, but with the element ```elt``` removed from it.
 
-```
+```lisp
 HASH-SET> (hs-to-list (hs-remove (list-to-hs '(4 5 6 7)) 5))
 (4 6 7)
 ```
