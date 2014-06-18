@@ -5,8 +5,7 @@ constant time lookup, insertion and deletion.
 
 Basic usage:
 
-1. Assuming you use Quicklisp, clone this repo into your
-```$QUICKLISP-DIR/local-projects```.
+1. Assuming you use Quicklisp, clone this repo into your ```quicklisp/local-projects```.
 2. ```(ql:register-local-projects)```
 3. ```(ql:quickload 'hash-set)```
 4. Enjoy.
