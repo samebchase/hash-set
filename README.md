@@ -12,11 +12,12 @@ Basic usage:
 
 ### Function reference
 
-Note: ```*!hash-set!*``` means the hash-set is destructively modified.
+Note: ```*!hash-set!*``` means the hash-set is destructively
+modified. Functions that are destructive have an 'n' in front of their
+name like CL's ```reverse``` and ```nreverse```. So, the destructive
+version of ```hs-insert``` is ```hs-ninsert```.
 
-#### make-hash-set
-
-```() -> hash-set```
+#### make-hash-set : ```() -> hash-set```
 
 Creates a new hash-set
 
@@ -154,17 +155,34 @@ HASH-SET> (hs-to-list (hs-cartesian-product (list-to-hs (alexandria:iota 3 :star
 Returns a new hash-set which contains the element ```elt``` in
 addition to all the elements of the hash-set given as the argument.
 
+```lisp
+HASH-SET> (hs-to-list (hs-insert (list-to-hs '(4 5 6)) 123))
+(4 5 6 123)
+```
+
 #### hs-ninsert
 
 ```hash-set elt -> *!hash-set!*```
 
 Inserts elt into the hash-set and returns the modified hash-set.
 
+```lisp
+HASH-SET> (let ((hash-set (list-to-hs '(1 2 3 4))))
+            (hs-ninsert hash-set 1984)
+            (hs-to-list hash-set))
+(1 2 3 4 1984)
+```
+
 #### hs-remove
 
 ```hash-set elt -> hash-set```
 
 Returns a copy of the hash-set, but with the element ```elt``` removed from it.
+
+```
+HASH-SET> (hs-to-list (hs-remove (list-to-hs '(4 5 6 7)) 5))
+(4 6 7)
+```
 
 #### hs-nremove
 
@@ -209,7 +227,8 @@ hash-set.
 
 ```predicate hash-set -> bool```
 
-A function that returns true if any elements of the hash-set test true with the predicate.
+A function that returns true if any elements of the hash-set test true
+with the predicate.
 
 ```lisp
 HASH-SET> (hs-any #'oddp (list-to-hs '(2 4 6 8 9)))
@@ -220,7 +239,8 @@ T
 
 ```predicate hash-set -> bool```
 
-A function that returns true if all elements of the hash-set test true with the predicate.
+A function that returns true if all elements of the hash-set test true
+with the predicate.
 
 ```lisp
 HASH-SET> (hs-all #'evenp (list-to-hs '(2 4 6 8 9)))
@@ -256,7 +276,8 @@ Returns a hash-set that is the intersection of two hash-sets.
 
 ```hash-set-a hash-set-b -> *!hash-set-a!*```
 
-Returns a modified ```hash-set-a``` which contains the elements of the intersection of ```hash-set-a``` and ```hash-set-b```.
+Returns a modified ```hash-set-a``` which contains the elements of the
+intersection of ```hash-set-a``` and ```hash-set-b```.
 
 #### hs-difference
 
@@ -284,7 +305,8 @@ set-difference of ```hash-set-a``` and ```hash-set-b```.
 Returns a hash-set with the common elements removed.
 
 ```
-HASH-SET> (hs-to-list (hs-symmetric-difference (list-to-hs '(1 2 3 4)) (list-to-hs '(3 4 5 6))))
+HASH-SET> (hs-to-list (hs-symmetric-difference (list-to-hs '(1 2 3 4))
+                                               (list-to-hs '(3 4 5 6))))
 (1 2 5 6)
 ```
 
@@ -332,10 +354,13 @@ HASH-SET> (hs-to-list (hs-powerset (list-to-hs '(1 2 3))))
 
 ```hash-set-a hash-set-b -> hash-set```
 
-Returns the hash-set containing the elements of the cartesian product of ```hash-set-a``` and ```hash-set-b```.
+Returns the hash-set containing the elements of the cartesian product
+of ```hash-set-a``` and ```hash-set-b```.
 
 ```lisp
 HASH-SET> (hs-to-list (hs-cartesian-product (list-to-hs (alexandria:iota 3 :start 1)) 
                                             (list-to-hs (alexandria:iota 3 :start 10))))
 ((1 10) (1 11) (1 12) (2 10) (2 11) (2 12) (3 10) (3 11) (3 12))
 ```
+
+For even more usage examples please see ```test.lisp```.
