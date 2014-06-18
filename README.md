@@ -307,3 +307,11 @@ HASH-SET> (hs-to-list (hs-cartesian-product (list-to-hs (alexandria:iota 3 :star
 ```
 
 For even more usage examples please see ```test.lisp```.
+
+### Credits
+
+Engineering guidance taken from Robert Smith's
+[map-set](https://bitbucket.org/tarballs_are_good/map-set) and Takaya
+Ochiai's [cl-intset](https://github.com/tkych/cl-intset) libraries.
+
+The people at #lisp for their help and guidance.

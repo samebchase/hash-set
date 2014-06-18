@@ -1,12 +1,5 @@
 (in-package :hash-set)
 
-#|
-
-Engineering guidance taken from Robert Smith's map-set library that
-can be installed using Quicklisp.
-
-|#
-
 (defclass hash-set ()
   ((table :accessor table :initform (make-hash-table :test #'equalp))
    (size  :accessor size :initform 0))
@@ -168,7 +161,6 @@ can be installed using Quicklisp.
             (hs-difference hs-b hs-a)))
 
 (defun hs-subsetp (hs-subset hs-superset)
-  "Returns T when hs-subset is a subset of hs-superset."
   (let ((return-value t))
     (dohashset (subset-elt hs-subset)
       (unless (hs-memberp hs-superset subset-elt)
@@ -211,7 +203,6 @@ can be installed using Quicklisp.
     result))
 
 (defun hs-powerset (hash-set)
-  "Generates the powerset of hash-set."
   (let ((result (make-hash-set))
         (result-length (expt 2 (hs-count hash-set)))
         (indexed-set-table (make-hash-table :test 'equal))
