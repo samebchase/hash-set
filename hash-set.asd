@@ -1,5 +1,3 @@
-;;;; graphs.asd
-
 (defpackage :hash-set-system
   (:use :cl :asdf))
 
@@ -7,9 +5,9 @@
 
 (defsystem #:hash-set
   :serial t
-  :description "Explorations in set theory."
+  :description "An implementation of the hash-set data structure."
   :author "Samuel Chase <samebchase@gmail.com>"
-  :license "Unknown"
+  :license "Unlicense"
   :depends-on (#:alexandria
                #:optima
                #:fiveam)
