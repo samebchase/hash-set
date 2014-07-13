@@ -1,7 +1,9 @@
 (in-package :hash-set)
 
 (defclass hash-set ()
-  ((table :accessor table :initform (make-hash-table :test #'equalp))
+  (#+sbcl (table :accessor table :initform (make-hash-table :test #'equal :synchronized t))
+   #+clozure (table :accessor table :initform (make-hash-table :test #'equal :shared t))
+   #-(or sbcl clozure) (table :accessor table :initform (make-hash-table :test #'equal))
    (size  :accessor size :initform 0))
   (:documentation "A hashset."))
 

@@ -3,6 +3,8 @@
 hash-set is an implementation of the hash-set data structure. It has
 constant time lookup, insertion and deletion.
 
+All tests are known to run successfully on SBCL, CCL, ABCL and CLISP.
+
 Basic usage:
 
 1. Assuming you use Quicklisp, clone this repo into your ```quicklisp/local-projects```.
