@@ -1,10 +1,11 @@
 (in-package :hash-set)
 
 (defclass hash-set ()
-  (#+sbcl (table :accessor table :initform (make-hash-table :test #'equal :synchronized t))
+  (
+   #+sbcl (table :accessor table :initform (make-hash-table :test #'equal :synchronized t))
    #+clozure (table :accessor table :initform (make-hash-table :test #'equal :shared t))
    #-(or sbcl clozure) (table :accessor table :initform (make-hash-table :test #'equal))
-   (size  :accessor size :initform 0))
+   )
   (:documentation "A hashset."))
 
 (defun make-hash-set ()
@@ -40,7 +41,7 @@
     (nreverse result)))
 
 (defun hs-count (hash-set)
-  (size hash-set))
+  (hash-table-count (table hash-set)))
 
 (defun hs-emptyp (hash-set)
   (= 0 (hs-count hash-set)))
@@ -73,27 +74,23 @@
 (defun hs-insert (hash-set item)
   (let ((result (hs-copy hash-set)))
     (unless (hs-memberp result item)
-      (push t (gethash item (table result)))
-      (incf (size result)))
+      (push t (gethash item (table result))))
     result))
 
 (defun hs-ninsert (hash-set item)
   (unless (hs-memberp hash-set item)
-    (push t (gethash item (table hash-set)))
-    (incf (size hash-set)))
+    (push t (gethash item (table hash-set))))
   hash-set)
 
 (defun hs-remove (hash-set item)
   (let ((result (hs-copy hash-set)))
     (when (hs-memberp result item)
-      (remhash item (table result))
-      (decf (size result)))
+      (remhash item (table result)))
     result))
 
 (defun hs-nremove (hash-set item)
   (when (hs-memberp hash-set item)
-    (remhash item (table hash-set))
-    (decf (size hash-set)))
+    (remhash item (table hash-set)))
   hash-set)
 
 (defun hs-remove-if (predicate hash-set)
