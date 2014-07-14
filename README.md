@@ -3,14 +3,12 @@
 hash-set is an implementation of the hash-set data structure. It has
 constant time lookup, insertion and deletion.
 
-All tests are known to run successfully on SBCL, CCL, ABCL and CLISP.
+All tests are known to run successfully on SBCL, CCL, ECL, ABCL and CLISP.
 
 Basic usage:
 
-1. Assuming you use Quicklisp, clone this repo into your ```quicklisp/local-projects```.
-2. ```(ql:register-local-projects)```
-3. ```(ql:quickload 'hash-set)```
-4. Enjoy.
+1. Please install [Quicklisp](http://www.quicklisp.org/) first.
+2. ```(ql:quickload 'hash-set)```
 
 ### Function reference
 
