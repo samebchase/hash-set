@@ -40,6 +40,25 @@
           (push elt result)))
     (nreverse result)))
 
+(defun hash-keys-to-set (hash-table)
+  (let ((result (make-hash-set)))
+    (loop :for key :being :the :hash-keys :of hash-table
+       :do (hs-ninsert result key))
+    result))
+
+(defun hash-values-to-set (hash-table)
+  (let ((result (make-hash-set)))
+    (loop :for value :being :the :hash-values :of hash-table
+       :do (hs-ninsert result value))
+    result))
+
+(defun hash-table-to-set (hash-table)
+  (let ((result (make-hash-set)))
+    (loop :for key :being :the :hash-keys :of hash-table
+       :using (hash-value value)
+       :do (hs-ninsert result (cons key value)))
+    result))
+
 (defun hs-count (hash-set)
   (hash-table-count (table hash-set)))
 

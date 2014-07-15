@@ -211,3 +211,23 @@
                 (list-to-hs '(NIL (1) (2) (1 2) (3) (1 3) (2 3) (1 2 3)))))
   (is (hs-equal (hs-powerset (list-to-hs '()))
                 (list-to-hs '(())))))
+
+(test hash-table-hash-set-conversions
+  (let ((hash-table (make-hash-table))
+        (keys '(:one :two :three :four))
+        (values '(1 2 3 4))
+        (tuple-set (make-hash-set)))
+
+    (loop :for key :in keys
+       :for value :in values
+       :do (push value (gethash key hash-table))
+       (hs-ninsert tuple-set (cons key value)))
+
+    (is (hs-equal (list-to-hs keys)
+                  (hash-keys-to-set hash-table)))
+
+    (is (hs-equal (list-to-hs values)
+                  (hash-values-to-set hash-table)))
+
+    (is (hs-equal (hash-table-to-set hash-table)
+                  tuple-set))))

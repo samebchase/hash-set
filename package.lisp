@@ -6,6 +6,9 @@
            #:make-hash-set
            #:list-to-hs
            #:hs-to-list
+           #:hash-keys-to-set
+           #:hash-values-to-set
+           #:hash-table-to-set
 
            #:hs-copy
            #:hs-equal
@@ -49,6 +52,7 @@
            #:hs-proper-subsetp
            #:hs-supersetp
            #:hs-proper-supersetp
+
            #:hs-powerset))
 
 (defpackage #:hash-set-test
