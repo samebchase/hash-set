@@ -8,5 +8,5 @@
   :depends-on (#:alexandria
                #:optima)
   :components ((:file "package")
-               (:file "hash-set"))
+               (:file "hash-set")))
 
