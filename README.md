@@ -334,4 +334,6 @@ Ochiai's [cl-intset](https://github.com/tkych/cl-intset) libraries.
 
 #### Contributors
 [Javier Olaechea](http://www.puercopop.com) 
+
+#### Thanks to
 The people at #lisp for their help and guidance.
