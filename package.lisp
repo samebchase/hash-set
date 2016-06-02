@@ -54,8 +54,3 @@
            #:hs-proper-supersetp
 
            #:hs-powerset))
-
-(defpackage #:hash-set-test
-  (:use #:cl
-        #:fiveam
-        #:hash-set))

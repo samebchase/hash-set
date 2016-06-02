@@ -1,12 +1,10 @@
 (in-package #:asdf-user)
 
-(defsystem #:hash-set
+(defsystem #:hash-set-tests
   :serial t
   :description "An implementation of the hash-set data structure."
   :author "Samuel Chase <samebchase@gmail.com>"
   :license "Unlicense"
-  :depends-on (#:alexandria
-               #:optima)
-  :components ((:file "package")
-               (:file "hash-set"))
-
+  :depends-on (#:hash-set
+               #:fiveam)
+  :components ((:file "test")))

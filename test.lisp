@@ -1,3 +1,8 @@
+(defpackage #:hash-set-test
+  (:use #:cl
+        #:fiveam
+        #:hash-set))
+
 (in-package :hash-set-test)
 
 (def-suite all-tests)
