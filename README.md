@@ -309,13 +309,15 @@ For even more usage examples please see ```test.lisp```.
 ### Running the tests
 
 ```lisp
-CL-USER> (ql:quickload 'hash-set)
-To load "hash-set":
+CL-USER> (ql:quickload 'hash-set-tests)
+To load "hash-set-tests":
   Load 1 ASDF system:
-    hash-set
-; Loading "hash-set"
-..
-(HASH-SET)
+    hash-set-tests
+; Loading "hash-set-tests"
+[package hash-set]................................
+[package hash-set-test].
+(HASH-SET-TESTS)
+
 CL-USER> (in-package :hash-set-test)
 #<PACKAGE "HASH-SET-TEST">
 HASH-SET-TEST> (run!)
@@ -330,4 +332,6 @@ Engineering guidance taken from Robert Smith's
 [map-set](https://bitbucket.org/tarballs_are_good/map-set) and Takaya
 Ochiai's [cl-intset](https://github.com/tkych/cl-intset) libraries.
 
+#### Contributors
+[Javier Olaechea](http://www.puercopop.com) 
 The people at #lisp for their help and guidance.
