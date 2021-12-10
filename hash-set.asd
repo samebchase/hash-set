@@ -5,8 +5,7 @@
   :description "An implementation of the hash-set data structure."
   :author "Samuel Chase <samebchase@gmail.com>"
   :license "Unlicense"
-  :depends-on (#:alexandria
-               #:optima)
+  :depends-on (#:alexandria)
   :components ((:file "package")
                (:file "hash-set")))
 
