@@ -221,7 +221,7 @@ NIL
 ```
 
 
-##### hs-npop : ```hash-set -> *!hash-set!*```
+##### hs-npop : ```hash-set -> elt *!hash-set!*```
 Modifying version of ```hs-pop```.
 Removes an arbitrary element of hash-set and returns both it and hash-set with the
 element removed.
