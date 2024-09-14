@@ -217,6 +217,30 @@
   (is (hs-equal (hs-powerset (list-to-hs '()))
                 (list-to-hs '(())))))
 
+(test hs-pop
+  (flet ((check-pop (old-set new-set value)
+           (is (hs-memberp old-set value))
+           (is (not (hs-memberp new-set value)))
+           (is (= 1
+                  (- (hs-count old-set)
+                     (hs-count new-set))))))
+    (let* ((original (hs 1 2 3 4 5))
+           (original-size (hs-count original)))
+      (loop
+        :with popped-value :and new-set
+        :for current-set = original :then new-set
+        :until (zerop (hs-count current-set))
+        :do (setf (values popped-value new-set) (hs-pop current-set))
+            (check-pop current-set new-set popped-value))
+      (is (= original-size (hs-count original))))
+    
+    (let ((original (hs 1 2 3 4 5)))
+      (loop
+        :with current-set = original
+        :until (zerop (hs-count current-set))
+        :do (hs-npop current-set))
+      (is (zerop (hs-count original))))))
+
 (test hash-table-hash-set-conversions
   (let ((hash-table (make-hash-table))
         (keys '(:one :two :three :four))
@@ -224,9 +248,9 @@
         (tuple-set (make-hash-set)))
 
     (loop :for key :in keys
-       :for value :in values
-       :do (push value (gethash key hash-table))
-       (hs-ninsert tuple-set (cons key value)))
+          :for value :in values
+          :do (push value (gethash key hash-table))
+              (hs-ninsert tuple-set (cons key value)))
 
     (is (hs-equal (list-to-hs keys)
                   (hash-keys-to-set hash-table)))

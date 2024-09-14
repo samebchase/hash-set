@@ -36,12 +36,15 @@
                       ,hash-set)
           ,result))
 
+(defun hs (&rest values)
+  (list-to-hs values))
+
 (defun list-to-hs (list)
   (let ((hash-set (make-hash-set)))
     (loop for elt in list do
-         (if (consp elt)
-             (hs-ninsert hash-set (list-to-hs elt))
-             (hs-ninsert hash-set elt)))
+      (if (consp elt)
+          (hs-ninsert hash-set (list-to-hs elt))
+          (hs-ninsert hash-set elt)))
     hash-set))
 
 (defun hs-to-list (hash-set)
@@ -267,3 +270,20 @@
 (defmethod print-object ((hash-set hash-set) stream)
   (print-unreadable-object (hash-set stream :identity t :type t)
     (format stream "of count: ~a" (hs-count hash-set))))
+
+(declaim (inline hs-first))
+(defun hs-first (hs)
+  (loop :for i :below 1
+        :for key :being :the :hash-keys :of (table hs)
+        :finally (return key)))
+(defun hs-pop (hs)
+  (let* ((element (hs-first hs))
+         (result (hs-remove hs element)))
+    (values element result)))
+
+(defun hs-npop (hs)
+  (let ((element (hs-first hs)))
+    (hs-nremove hs element)
+    (values element hs)))
+
+
