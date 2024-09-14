@@ -187,10 +187,16 @@
   hs-a)
 
 (defun hs-difference (hs-a hs-b)
-  (let ((result (hs-copy hs-a)))
-    (dohashset (elt hs-b)
-      (hs-nremove result elt))
-    result))
+  (let ((smaller (if (< (hs-count hs-a) (hs-count hs-b))
+                     hs-a
+                     hs-b))
+        (larger (if (< (hs-count hs-a) (hs-count hs-b))
+                    hs-b
+                    hs-a)))
+    (let ((result (hs-copy larger)))
+      (dohashset (elt smaller)
+        (hs-nremove result elt))
+      result)))
 
 (defun hs-ndifference (hs-a hs-b)
   (dohashset (elt hs-b)
