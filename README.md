@@ -240,6 +240,19 @@ NIL
 #<HASH-SET of count: 0 {104DE05CD3}>
 ```
 
+```hs-pop``` and ```hs-npop``` are useful for iterating over sets when the size can change
+during the loop.
+```lisp
+HASH-SET> (loop :with hs = (list-to-hs (alexandria:iota 10))
+                :while (not (zerop (hs-count hs)))
+                :when (evenp (hs-npop hs))
+                  :do
+                     (dotimes (i 3)
+                       (hs-ninsert hs (random 20)))
+                :do
+                   (format t "hs is now: ~a~%" hs))
+```
+
 
 #### Set operations
 
