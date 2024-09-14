@@ -245,12 +245,13 @@ during the loop.
 ```lisp
 HASH-SET> (loop :with hs = (list-to-hs (alexandria:iota 10))
                 :while (not (zerop (hs-count hs)))
-                :when (evenp (hs-npop hs))
+                :for removed = (hs-npop hs)
+                :when (evenp removed)
                   :do
                      (dotimes (i 3)
                        (hs-ninsert hs (random 20)))
                 :do
-                   (format t "hs is now: ~a~%" hs))
+                   (format t "hs is now: ~a~%" (hs-to-list hs)))
 ```
 
 
