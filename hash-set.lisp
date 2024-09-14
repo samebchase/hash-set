@@ -1,6 +1,11 @@
 (in-package :hash-set)
 
-(declaim (inline hs-map hs-copy ))
+(declaim (inline hs-map
+                 hs-copy
+                 hs-memberp
+                 hs-count
+                 hs-ninsert
+                 hs-insert))
 (defun make-hs-hash-table (size-hint)
   #+sbcl(make-hash-table :test #'equal :synchronized t :size size-hint)
   #+clozure(make-hash-table :test #'equal :shared t :size size-hint)
