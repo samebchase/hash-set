@@ -2,14 +2,21 @@
 
 (defclass hash-set ()
   (
-   #+sbcl (table :accessor table :initform (make-hash-table :test #'equal :synchronized t))
+   #+sbcl (table :accessor table
+                 :initform (make-hash-table :test #'equal :synchronized t)
+                 :initarg :table)
    #+clozure (table :accessor table :initform (make-hash-table :test #'equal :shared t))
    #-(or sbcl clozure) (table :accessor table :initform (make-hash-table :test #'equal))
    )
   (:documentation "A hashset."))
 
-(defun make-hash-set ()
-  (make-instance 'hash-set))
+(declaim (inline hs-map hs-copy))
+(defun make-hash-set (&optional size-hint)
+  (make-instance 'hash-set :table (make-hash-table :test #'equal
+                                                   :synchronized t
+                                                   :size (if size-hint
+                                                             size-hint
+                                                             10))))
 
 (defun hs-map (fn hash-set)
   (let ((result (make-hash-set)))
@@ -75,7 +82,7 @@
         t)))
 
 (defun hs-copy (hash-set)
-  (let ((hs-copy (make-hash-set)))
+  (let ((hs-copy (make-hash-set (hs-count hash-set))))
     (dohashset (elt hash-set)
       (hs-ninsert hs-copy elt))
     hs-copy))
