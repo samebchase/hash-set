@@ -86,13 +86,13 @@
   (= 0 (hs-count hash-set)))
 
 (defun hs-equal (hs-a hs-b)
-  (if (/= (hs-count hs-a) (hs-count hs-b))
-      nil
-      (progn
-        (dohashset (elt hs-a)
-          (unless (hs-memberp hs-b elt)
-            (return nil)))
-        t)))
+  (when (/= (hs-count hs-a) (hs-count hs-b))
+    (return-from hs-equal nil))
+
+  (dohashset (elt hs-a)
+    (when (not (hs-memberp hs-b elt))
+      (return nil)))
+  t)
 
 (defun hs-copy (hash-set)
   (let ((hs-copy (make-hash-set (hs-count hash-set))))
