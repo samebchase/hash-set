@@ -30,16 +30,17 @@
 
 (defun hs-map (fn hash-set)
   (let ((result (make-hash-set)))
-    (loop for key being the hash-keys of (table hash-set)
-       do (hs-ninsert result (funcall fn key)))
+    (loop
+      :for key :being :the :hash-keys :of (table hash-set)
+      :do (hs-ninsert result (funcall fn key)))
     result))
 
 (defmacro dohashset ((var hash-set &optional result) &body body)
-  ;; magic due to pjb from #lisp
-  `(block nil (hs-map (lambda (,var)
-                        (tagbody ,@body))
-                      ,hash-set)
-          ,result))
+  `(loop
+     :for ,var :being :the :hash-keys :of (table ,hash-set)
+     :do
+        (tagbody ,@body)
+     :finally (return ,result)))
 
 (defun hs (&rest values)
   (list-to-hs values))
