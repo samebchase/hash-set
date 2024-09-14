@@ -151,9 +151,17 @@
   hs-a)
 
 (defun hs-intersection (hs-a hs-b)
-  (let ((result (make-hash-set)))
-    (dohashset (elt hs-a)
-      (when (hs-memberp hs-b elt)
+  (let ((result (make-hash-set))
+        ;; Loop over the smaller of the sets
+        ;; and check if the entries exists in the larger
+        (smaller (if (< (hs-count hs-a) (hs-count hs-b))
+                     hs-a
+                     hs-b))
+        (larger (if (< (hs-count hs-a) (hs-count hs-b))
+                hs-b
+                hs-a)))
+    (dohashset (elt smaller)
+      (when (hs-memberp larger elt)
         (hs-ninsert result elt)))
     result))
 
