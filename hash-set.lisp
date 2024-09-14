@@ -29,7 +29,7 @@
                                                           10))))
 
 (defun hs-map (fn hash-set)
-  (let ((result (make-hash-set)))
+  (let ((result (make-hash-set (hs-count hash-set))))
     (loop
       :for key :being :the :hash-keys :of (table hash-set)
       :do (hs-ninsert result (funcall fn key)))
@@ -48,11 +48,13 @@
   (list-to-hs values))
 
 (defun list-to-hs (list)
-  (let ((hash-set (make-hash-set)))
-    (loop for elt in list do
-      (if (consp elt)
-          (hs-ninsert hash-set (list-to-hs elt))
-          (hs-ninsert hash-set elt)))
+  (let ((hash-set (make-hash-set (length list))))
+    (loop
+      :for elt :in list
+      :do
+         (if (consp elt)
+             (hs-ninsert hash-set (list-to-hs elt))
+             (hs-ninsert hash-set elt)))
     hash-set))
 
 (defun hs-to-list (hash-set)
@@ -63,7 +65,7 @@
           (push elt result)))))
 
 (defun hash-keys-to-set (hash-table)
-  (let ((result (make-hash-set)))
+  (let ((result (make-hash-set (hash-table-count hash-table))))
     (loop :for key :being :the :hash-keys :of hash-table
        :do (hs-ninsert result key))
     result))
@@ -75,7 +77,7 @@
     result))
 
 (defun hash-table-to-set (hash-table)
-  (let ((result (make-hash-set)))
+  (let ((result (make-hash-set (hash-table-count hash-table))))
     (loop :for key :being :the :hash-keys :of hash-table
        :using (hash-value value)
        :do (hs-ninsert result (cons key value)))
@@ -86,6 +88,9 @@
 
 (defun hs-emptyp (hash-set)
   (= 0 (hs-count hash-set)))
+
+(defun hs-memberp (hash-set item)
+  (nth-value 1 (gethash item (table hash-set))))
 
 (defun hs-equal (hs-a hs-b)
   (when (/= (hs-count hs-a) (hs-count hs-b))
@@ -100,13 +105,12 @@
       (hs-ninsert hs-copy elt))))
 
 (defun hs-filter (fn hash-set)
-  (let ((result (make-hash-set)))
+  (let ((result (make-hash-set (floor (* 0.5 (hs-count hash-set))))))
     (dohashset (elt hash-set result)
       (when (funcall fn elt)
         (hs-ninsert result elt)))))
 
-(defun hs-memberp (hash-set item)
-  (nth-value 1 (gethash item (table hash-set))))
+
 
 (defun hs-insert (hash-set item)
   (let ((result (hs-copy hash-set 1)))
@@ -218,7 +222,7 @@
 
 (defun %one-bit-positions (n)
   (loop
-    :with result = (make-hash-set)
+    :with result = (make-hash-set 64)
     :for i :from 0 :below (integer-length n)
     :for one-bitp = (logbitp i n)
     :when one-bitp
@@ -231,7 +235,7 @@
          (indexed-set-table (make-hash-table :test 'equal))
          (idx 0))
     (flet ((subset-from-bit-repr-int (bit-repr-int)
-             (let ((result (make-hash-set)))
+             (let ((result (make-hash-set 64)))
                (dohashset (var (%one-bit-positions bit-repr-int) result)
                  (hs-ninsert result (gethash var indexed-set-table))))))
       (dohashset (var hash-set)
