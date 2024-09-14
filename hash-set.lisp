@@ -36,11 +36,13 @@
     result))
 
 (defmacro dohashset ((var hash-set &optional result) &body body)
-  `(loop
-     :for ,var :being :the :hash-keys :of (table ,hash-set)
-     :do
-        (tagbody ,@body)
-     :finally (return ,result)))
+  `(progn
+     (loop
+       :for ,var :being :the :hash-keys :of (table ,hash-set)
+       :do
+          (tagbody
+             ,@body))
+     ,result))
 
 (defun hs (&rest values)
   (list-to-hs values))
@@ -55,11 +57,10 @@
 
 (defun hs-to-list (hash-set)
   (let ((result ()))
-    (dohashset (elt hash-set)
+    (dohashset (elt hash-set (nreverse result))
       (if (eq (type-of elt) 'hash-set)
           (push (hs-to-list elt) result)
-          (push elt result)))
-    (nreverse result)))
+          (push elt result)))))
 
 (defun hash-keys-to-set (hash-table)
   (let ((result (make-hash-set)))
@@ -68,7 +69,7 @@
     result))
 
 (defun hash-values-to-set (hash-table)
-  (let ((result (make-hash-set)))
+  (let ((result (make-hash-set (hash-table-count hash-table))))
     (loop :for value :being :the :hash-values :of hash-table
        :do (hs-ninsert result value))
     result))
@@ -89,37 +90,31 @@
 (defun hs-equal (hs-a hs-b)
   (when (/= (hs-count hs-a) (hs-count hs-b))
     (return-from hs-equal nil))
-
-  (dohashset (elt hs-a)
+  (dohashset (elt hs-a t)
     (when (not (hs-memberp hs-b elt))
-      (return nil)))
-  t)
+      (return nil))))
 
-(defun hs-copy (hash-set)
-  (let ((hs-copy (make-hash-set (hs-count hash-set))))
-    (dohashset (elt hash-set)
-      (hs-ninsert hs-copy elt))
-    hs-copy))
+(defun hs-copy (hash-set &optional (extra-capacity 0))
+  (let ((hs-copy (make-hash-set (+ extra-capacity (hs-count hash-set)))))
+    (dohashset (elt hash-set hs-copy)
+      (hs-ninsert hs-copy elt))))
 
 (defun hs-filter (fn hash-set)
   (let ((result (make-hash-set)))
-    (dohashset (elt hash-set)
+    (dohashset (elt hash-set result)
       (when (funcall fn elt)
-        (hs-ninsert result elt)))
-    result))
+        (hs-ninsert result elt)))))
 
 (defun hs-memberp (hash-set item)
   (nth-value 1 (gethash item (table hash-set))))
 
 (defun hs-insert (hash-set item)
-  (let ((result (hs-copy hash-set)))
-    (unless (hs-memberp result item)
-      (push t (gethash item (table result))))
+  (let ((result (hs-copy hash-set 1)))
+    (setf (gethash item (table result)) t)
     result))
 
 (defun hs-ninsert (hash-set item)
-  (unless (hs-memberp hash-set item)
-    (push t (gethash item (table hash-set))))
+  (setf (gethash item (table hash-set)) t)
   hash-set)
 
 (defun hs-remove (hash-set item)
@@ -129,50 +124,42 @@
     result))
 
 (defun hs-nremove (hash-set item)
-  (when (hs-memberp hash-set item)
-    (remhash item (table hash-set)))
+  (remhash item (table hash-set))
   hash-set)
 
 (defun hs-remove-if (predicate hash-set)
   (let ((result (hs-copy hash-set)))
-    (dohashset (elt result)
+    (dohashset (elt result result)
       (when (funcall predicate elt)
-        (hs-nremove result elt)))
-    result))
+        (hs-nremove result elt)))))
 
 (defun hs-nremove-if (predicate hash-set)
-  (dohashset (elt hash-set)
+  (dohashset (elt hash-set hash-set)
     (when (funcall predicate elt)
-      (hs-nremove hash-set elt)))
-  hash-set)
+      (hs-nremove hash-set elt))))
 
 (defun hs-remove-if-not (predicate hash-set)
   (let ((result (hs-copy hash-set)))
-    (dohashset (elt result)
+    (dohashset (elt result result)
       (unless (funcall predicate elt)
-        (hs-nremove result elt)))
-    result))
+        (hs-nremove result elt)))))
 
 (defun hs-nremove-if-not (predicate hash-set)
-  (dohashset (elt hash-set)
+  (dohashset (elt hash-set hash-set)
     (unless (funcall predicate elt)
-      (hs-nremove hash-set elt)))
-  hash-set)
+      (hs-nremove hash-set elt))))
 
 (defun hs-union (hs-a hs-b)
-  (let ((result (hs-copy hs-a)))
-    (dohashset (elt hs-b)
-      (hs-ninsert result elt))
-    result))
+  (let ((result (hs-copy hs-a (hs-count hs-b))))
+    (dohashset (elt hs-b result)
+      (hs-ninsert result elt))))
 
 (defun hs-nunion (hs-a hs-b)
-  (dohashset (elt hs-b)
-    (unless (hs-memberp hs-a elt)
-      (hs-ninsert hs-a elt)))
-  hs-a)
+  (dohashset (elt hs-b hs-a)
+    (hs-ninsert hs-a elt)))
 
 (defun hs-intersection (hs-a hs-b)
-  (let ((result (make-hash-set))
+  (let* (
         ;; Loop over the smaller of the sets
         ;; and check if the entries exists in the larger
         (smaller (if (< (hs-count hs-a) (hs-count hs-b))
@@ -180,40 +167,34 @@
                      hs-b))
         (larger (if (< (hs-count hs-a) (hs-count hs-b))
                 hs-b
-                hs-a)))
-    (dohashset (elt smaller)
+                hs-a))
+        (result (make-hash-set (hs-count smaller))))
+    (dohashset (elt smaller result)
       (when (hs-memberp larger elt)
-        (hs-ninsert result elt)))
-    result))
+        (hs-ninsert result elt)))))
 
 (defun hs-nintersection (hs-a hs-b)
-  (dohashset (elt hs-a)
+  (dohashset (elt hs-a hs-a)
     (unless (hs-memberp hs-b elt)
-      (hs-nremove hs-a elt)))
-  hs-a)
+      (hs-nremove hs-a elt))))
 
 (defun hs-difference (hs-a hs-b)
   (let ((result (hs-copy hs-a)))
-    (dohashset (elt hs-b)
-      (hs-nremove result elt))
-    result))
+    (dohashset (elt hs-b result)
+      (hs-nremove result elt))))
 
 (defun hs-ndifference (hs-a hs-b)
-  (dohashset (elt hs-b)
-    (hs-nremove hs-a elt))
-  hs-a)
+  (dohashset (elt hs-b hs-a)
+    (hs-nremove hs-a elt)))
 
 (defun hs-symmetric-difference (hs-a hs-b)
   (hs-union (hs-difference hs-a hs-b)
             (hs-difference hs-b hs-a)))
 
 (defun hs-subsetp (hs-subset hs-superset)
-  (let ((return-value t))
-    (dohashset (subset-elt hs-subset)
-      (unless (hs-memberp hs-superset subset-elt)
-        (setf return-value nil)
-        (return)))
-    return-value))
+  (dohashset (subset-elt hs-subset t)
+    (unless (hs-memberp hs-superset subset-elt)
+      (return-from hs-subsetp nil))))
 
 (defun hs-proper-subsetp (hs-subset hs-superset)
   (and (hs-subsetp hs-subset hs-superset)
@@ -226,52 +207,46 @@
   (hs-proper-subsetp hs-subset hs-superset))
 
 (defun hs-any (predicate hash-set)
-  (let ((return-value nil))
-    (dohashset (elt hash-set)
-      (when (funcall predicate elt)
-        (setf return-value t)
-        (return)))
-    return-value))
+  (dohashset (elt hash-set nil)
+    (when (funcall predicate elt)
+      (return-from hs-any t))))
 
 (defun hs-all (predicate hash-set)
-  (let ((return-value t))
-    (dohashset (elt hash-set)
-      (unless (funcall predicate elt)
-        (setf return-value nil)
-        (return)))
-    return-value))
+  (dohashset (elt hash-set t)
+    (unless (funcall predicate elt)
+      (return-from hs-all nil))))
 
 (defun %one-bit-positions (n)
-  (let ((result (make-hash-set)))
-    (loop for i from 0 below (integer-length n)
-       for one-bitp = (logbitp i n)
-       when one-bitp
-       do (hs-ninsert result i))
-    result))
+  (loop
+    :with result = (make-hash-set)
+    :for i :from 0 :below (integer-length n)
+    :for one-bitp = (logbitp i n)
+    :when one-bitp
+      :do (hs-ninsert result i)
+    :finally (return result)))
 
 (defun hs-powerset (hash-set)
-  (let ((result (make-hash-set))
-        (result-length (expt 2 (hs-count hash-set)))
-        (indexed-set-table (make-hash-table :test 'equal))
-        (idx 0))
+  (let* ((result-length (expt 2 (hs-count hash-set)))
+         (result (make-hash-set result-length))
+         (indexed-set-table (make-hash-table :test 'equal))
+         (idx 0))
     (flet ((subset-from-bit-repr-int (bit-repr-int)
              (let ((result (make-hash-set)))
-               (dohashset (var (%one-bit-positions bit-repr-int))
-                 (hs-ninsert result (gethash var indexed-set-table)))
-               result)))
+               (dohashset (var (%one-bit-positions bit-repr-int) result)
+                 (hs-ninsert result (gethash var indexed-set-table))))))
       (dohashset (var hash-set)
         (setf (gethash idx indexed-set-table) var)
         (incf idx))
-      (loop for bit-repr from 0 below result-length
-         do (hs-ninsert result (subset-from-bit-repr-int bit-repr))))
+      (loop
+        :for bit-repr :from 0 :below result-length
+         :do (hs-ninsert result (subset-from-bit-repr-int bit-repr))))
     result))
 
 (defun hs-cartesian-product (hs-a hs-b)
-  (let ((result (make-hash-set)))
-    (dohashset (elt-a hs-a)
+  (let ((result (make-hash-set (* (hs-count hs-a) (hs-count hs-b)))))
+    (dohashset (elt-a hs-a result)
       (dohashset (elt-b hs-b)
-        (hs-ninsert result (list elt-a elt-b))))
-    result))
+        (hs-ninsert result (list elt-a elt-b))))))
 
 (defmethod print-object ((hash-set hash-set) stream)
   (print-unreadable-object (hash-set stream :identity t :type t)
@@ -282,6 +257,7 @@
   (loop :for i :below 1
         :for key :being :the :hash-keys :of (table hs)
         :finally (return key)))
+
 (defun hs-pop (hs)
   (let* ((element (hs-first hs))
          (result (hs-remove hs element)))
