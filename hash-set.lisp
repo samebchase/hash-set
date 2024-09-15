@@ -263,7 +263,7 @@
   (hs-proper-subsetp hs-subset hs-superset))
 
 (defun hs-any (predicate hash-set)
-  "Test if any elements of `hash-set` satisfy `predicate` and returns `t` and the element.  Returns `nil` if no elements satisfy `predicate`"
+  "Test if any elements of `hash-set` satisfy `predicate` and returns `t` and the first element found.  Returns `nil` if no elements satisfy `predicate`"
   (declare (type hash-set hash-set)
            (type function predicate))
   (dohashset (elt hash-set nil)
