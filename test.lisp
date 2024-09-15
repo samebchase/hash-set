@@ -215,10 +215,10 @@
   ;; This is clunky but equal comparison fails on hash-sets...
   ;; Really we need the underlying hash-table to use hs-equal.
   ;; But for now, break out the inner sets to lists that work with equal comparison
-  (is (hs-equal (list-to-hs (mapcar #'hs-to-list
-                                    (hs-to-list
-                                     (hs-powerset (hs 1 2 3)))))
+  (is (hs-equal (list-to-hs (sort  (mapcar (lambda (lst) (sort lst #'<))(mapcar #'hs-to-list (hs-to-list (hs-powerset (hs 1 2 3))))) #'< :key #'length))
                 (list-to-hs '(NIL (1) (2) (1 2) (3) (1 3) (2 3) (1 2 3)))))
+
+
   (is (hs-equal (list-to-hs (mapcar #'hs-to-list (hs-to-list (hs-powerset (hs)))))
                 (list-to-hs '(())))))
 
