@@ -15,6 +15,8 @@
 
 (defparameter *assumed-filter-size* 0.5)
 
+(defparameter *show-elements* t)
+
 (defclass hash-set ()
   ((table :accessor table
           :initform (make-hs-hash-table 10)
@@ -56,21 +58,15 @@
 (defun list-to-hs (list)
   "Create a `hash-set` containing the elements of list."
   (let ((hash-set (make-hash-set (length list))))
-    (loop
-      :for elt :in list
-      :do
-         (if (consp elt)
-             (hs-ninsert hash-set (list-to-hs elt))
-             (hs-ninsert hash-set elt)))
+    (dolist (elt list)
+      (hs-ninsert hash-set elt))
     hash-set))
 
 (defun hs-to-list (hash-set)
   "Create a list containing the elements of `hash-set`."
   (let ((result ()))
     (dohashset (elt hash-set (nreverse result))
-      (if (eq (type-of elt) 'hash-set)
-          (push (hs-to-list elt) result)
-          (push elt result)))))
+      (push elt result))))
 
 (defun hash-keys-to-set (hash-table)
   "Create a `hash-set` containing the `:hash-keys` of `hash-table` as elements.  See also `hash-values-to-set`."
@@ -326,11 +322,6 @@
       (dohashset (elt-b hs-b)
         (hs-ninsert result (list elt-a elt-b))))))
 
-(defmethod print-object ((hash-set hash-set) stream)
-  "Print `hash-set` to `stream`."
-  (print-unreadable-object (hash-set stream :identity t :type t)
-    (format stream "of count: ~a" (hs-count hash-set))))
-
 (declaim (inline hs-first))
 (defun hs-first (hash-set)
   "Returns the element of `hash-set` that would be returned by `hs-pop` or `hs-npop`."
@@ -357,3 +348,16 @@
     (values element hash-set)))
 
 
+(defmethod print-object ((hash-set hash-set) stream)
+  "Print `hash-set` to `stream`."
+  (print-unreadable-object (hash-set stream :identity t :type t)
+    (cond
+      (*show-elements*
+       (format stream "(~a) {" (hs-count hash-set))
+       (loop
+         :for key :being :the :hash-keys :of (table hash-set)
+         :do
+            (format stream "~a " key))
+       (format stream "}"))
+      (t
+       (format stream "hash-set count: ~a" (hs-count hash-set))))))

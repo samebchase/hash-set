@@ -123,7 +123,7 @@
 (test hs-union
   (is (hs-equal (hs-union (list-to-hs ())
                           (list-to-hs ()))
-                (list-to-hs ())))                
+                (list-to-hs ())))
   (is (hs-equal (hs-union (list-to-hs '(0 1 2 3))
                           (list-to-hs '(4 5 6 7)))
                 (list-to-hs (alexandria:iota 8)))))
@@ -212,9 +212,14 @@
                                  (list-to-hs '(4 5 6 7)))))
 
 (test hs-powerset
-  (is (hs-equal (hs-powerset (list-to-hs '(1 2 3)))
+  ;; This is clunky but equal comparison fails on hash-sets...
+  ;; Really we need the underlying hash-table to use hs-equal.
+  ;; But for now, break out the inner sets to lists that work with equal comparison
+  (is (hs-equal (list-to-hs (mapcar #'hs-to-list
+                                    (hs-to-list
+                                     (hs-powerset (hs 1 2 3)))))
                 (list-to-hs '(NIL (1) (2) (1 2) (3) (1 3) (2 3) (1 2 3)))))
-  (is (hs-equal (hs-powerset (list-to-hs '()))
+  (is (hs-equal (list-to-hs (mapcar #'hs-to-list (hs-to-list (hs-powerset (hs)))))
                 (list-to-hs '(())))))
 
 (test hs-pop
@@ -233,7 +238,7 @@
         :do (setf (values popped-value new-set) (hs-pop current-set))
             (check-pop current-set new-set popped-value))
       (is (= original-size (hs-count original))))
-    
+
     (let ((original (hs 1 2 3 4 5)))
       (loop
         :with current-set = original
@@ -249,7 +254,7 @@
 
     (loop :for key :in keys
           :for value :in values
-          :do (push value (gethash key hash-table))
+          :do (setf (gethash key hash-table) value)
               (hs-ninsert tuple-set (cons key value)))
 
     (is (hs-equal (list-to-hs keys)

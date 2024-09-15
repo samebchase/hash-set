@@ -52,7 +52,7 @@
 
 (test difference-speed
   (when *benchmark-enabled*
-    
+
     (let* ((max-int 50000000)
            (large-size 50000)
            (small-size 50)
