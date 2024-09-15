@@ -84,7 +84,7 @@
 
 (test hs-nremove-if-not
   (let ((hash-set (list-to-hs (alexandria:iota 10))))
-    (hs-nremove-if #'oddp hash-set)
+    (hs-nremove-if-not #'oddp hash-set)
     (is (hs-equal hash-set
                   (list-to-hs (alexandria:iota 5 :start 1 :step 2))))))
 

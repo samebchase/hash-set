@@ -116,7 +116,7 @@
     (return-from hs-equal nil))
   (dohashset (elt hs-a t)
     (when (not (hs-memberp hs-b elt))
-      (return nil))))
+      (return-from hs-equal nil))))
 
 (defun hs-copy (hash-set &optional (extra-capacity 0))
   "Return a copy of `hash-set`, with `extra-capacity` extra capacity pre-allocated."
