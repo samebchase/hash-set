@@ -1,19 +1,51 @@
 (in-package :hash-set)
 
-(declaim (inline hs-map
+(declaim (inline make-hs-hash-table
+                 make-hash-set
+                 hs-map
                  hs-copy
                  hs-memberp
                  hs-count
                  hs-ninsert
                  hs-insert))
+(declaim (ftype (function (hash-set) fixnum)
+                hs-count)
+         (ftype (function (hash-set) t)
+                hs-emptyp hs-first)
+         (ftype (function (hash-set) (values t hash-set))
+                hs-pop hs-npop)
+         (ftype (function (hash-set t) t)
+                hs-memberp)
+         (ftype (function (hash-set hash-set) t)
+                hs-equal)
+         (ftype (function (hash-set hash-set) hash-set)
+                hs-intersection hs-nintersection
+                hs-union hs-nunion
+                hs-difference hs-ndifference
+                hs-cartesian-product)
+         (ftype (function (hash-set &optional fixnum))
+                hs-copy)
+         (ftype (function (hash-set) hash-set)
+                hs-powerset)
+         (ftype (function (function hash-set) hash-set)
+                hs-filter hs-remove-if hs-remove-if-not hs-nremove-if hs-nremove-if-not)
+         (ftype (function (hash-set t) hash-set)
+                hs-insert hs-ninsert hs-remove hs-nremove)
+         (ftype (function (hash-set t) hash-set))
+         (ftype (function (fixnum) hash-table)
+                make-hs-hash-table)
+         )
 (defun make-hs-hash-table (size-hint)
+  (declare (type fixnum size-hint)
+           (optimize (speed 3) (space 0) (safety 0) (debug 0)))
   #+sbcl(make-hash-table :test #'equal :synchronized t :size size-hint)
   #+clozure(make-hash-table :test #'equal :shared t :size size-hint)
   #-(or sbcl clozure)(make-hash-table :test #'equal :size size-hint)
   )
 
-
-(defparameter *assumed-filter-size* 0.5)
+(defparameter *assumed-filter-ratio* 0.67
+  "Parameter for controlling the initial capacity of the hash-set returned by hs-filter
+initial-capacity = (floor (* *assumed-filter-ratio* (hs-count hash-set)))")
 
 (defparameter *show-elements* t)
 
@@ -29,7 +61,7 @@
 (defun make-hash-set (&optional (size-hint 10))
   "Create a new `hash-set`, allocating at least enough initial capacity to store `size-hint` elements.
 {}"
-  (declare (type integer size-hint))
+  (declare (type fixnum size-hint))
   (make-instance 'hash-set :table (make-hs-hash-table size-hint)))
 
 (defun hs-map (fn hash-set)
@@ -57,6 +89,8 @@
 
 (defun list-to-hs (list)
   "Create a `hash-set` containing the elements of list."
+  (declare (type list list)
+           (optimize (speed 3) (space 0) (safety 0) (debug 0)))
   (let ((hash-set (make-hash-set (length list))))
     (dolist (elt list)
       (hs-ninsert hash-set elt))
@@ -64,6 +98,8 @@
 
 (defun hs-to-list (hash-set)
   "Create a list containing the elements of `hash-set`."
+  (declare (type hash-set hash-set)
+           (optimize (speed 3) (space 0) (safety 0) (debug 0)))
   (let ((result ()))
     (dohashset (elt hash-set (nreverse result))
       (push elt result))))
@@ -90,9 +126,11 @@
           :do (hs-ninsert result (cons key value)))
     result))
 
+
 (defun hs-count (hash-set)
   "Return the number of elements in `hash-set`."
-  (declare (type hash-set hash-set))
+  (declare (type hash-set hash-set)
+           (optimize (speed 3) (space 0) (safety 0) (debug 0)))
   (hash-table-count (table hash-set)))
 
 (defun hs-emptyp (hash-set)
@@ -107,7 +145,8 @@
 
 (defun hs-equal (hs-a hs-b)
   "Test that `hs-a` and `hs-b` have the same `hs-count` and, if so, that every element of `hs-a` is a member of `hs-b`."
-  (declare (type hash-set hs-a hs-b))
+  (declare (type hash-set hs-a hs-b)
+           (optimize (speed 3) (space 0) (safety 0) (debug 0)))
   (when (/= (hs-count hs-a) (hs-count hs-b))
     (return-from hs-equal nil))
   (dohashset (elt hs-a t)
@@ -117,7 +156,8 @@
 (defun hs-copy (hash-set &optional (extra-capacity 0))
   "Return a copy of `hash-set`, with `extra-capacity` extra capacity pre-allocated."
   (declare (type hash-set hash-set)
-           (type fixnum extra-capacity))
+           (type fixnum extra-capacity)
+           (optimize (speed 3) (space 0) (safety 0) (debug 0)))
   (let ((hs-copy (make-hash-set (+ extra-capacity (hs-count hash-set)))))
     (dohashset (elt hash-set hs-copy)
       (hs-ninsert hs-copy elt))))
@@ -125,8 +165,11 @@
 (defun hs-filter (predicate hash-set)
   "Return a copy of `hash-set` where every element satisfies `predicate`."
   (declare (type hash-set hash-set)
-           (type function predicate))
-  (let ((result (make-hash-set (floor (* *assumed-filter-size* (hs-count hash-set))))))
+           (type single-float *assumed-filter-ratio*)
+           (type function predicate)
+           (optimize (speed 3) (space 0) (safety 0) (debug 0)))
+  (let ((result (make-hash-set (floor (* *assumed-filter-ratio*
+                                         (hs-count hash-set))))))
     (dohashset (elt hash-set result)
       (when (funcall predicate elt)
         (hs-ninsert result elt)))))
