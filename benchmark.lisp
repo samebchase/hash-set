@@ -19,6 +19,9 @@
           (hs-ninsert hsa (random a-size)))
         (when (< num b-size)
           (hs-ninsert hsb (random b-size))))
+
+      (format t "====================================================================================================~%")
+      (format t "    Time should be roughly equal.~%")
       (time (hs-intersection hsa hsb))
       (time (hs-intersection hsb hsa)))))
 
@@ -29,6 +32,8 @@
            (inplace-size 500000)
            (hsa (make-hash-set))
            (hsb (make-hash-set inplace-size)))
+      (format t "====================================================================================================~%")
+      (format t "    Second time should be a little faster with no consing, third time slowest with consing.~%")
       (time
        (dotimes (num inplace-size)
          (hs-ninsert hsa (random max-int))))
@@ -57,6 +62,8 @@
         (when (< i small-size)
           (hs-ninsert small-set (random max-int)))
         (hs-insert big-set (random max-int)))
+      (format t "====================================================================================================~%")
+      (format t "    Time should be roughly equal .~%")
       (time (hs-difference big-set small-set))
       (time (hs-difference small-set big-set)))))
 
@@ -65,10 +72,10 @@
   (when *benchmark-enabled*
 
     (let* ((max-int 50000000)
-           (sizes '(100
-                    1000
+           (sizes '(1000
                     10000
-                    100000))
+                    100000
+                    1000000))
            (tables (mapcar #'make-hash-set sizes)))
       (loop :for i :below (car (last sizes))
             :do
@@ -77,6 +84,8 @@
                      :when (< i siz)
                        :do
                           (hs-ninsert tab (random max-int))))
+      (format t "====================================================================================================~%")
+      (format t "    Time should increase linear (by roughly 10x) with no consing.~%")
       (dolist (tab tables)
         (let ((sum 0))
           (time (dohashset (var tab)
