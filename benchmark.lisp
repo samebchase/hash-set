@@ -5,7 +5,7 @@
 (in-suite benchmarking)
 
 (use-package :hash-set)
-(defparameter *benchmark-enabled* t)
+(defparameter *benchmark-enabled* nil)
 
 (test intersection-speed
   (when *benchmark-enabled*
