@@ -33,7 +33,7 @@
            (hsa (make-hash-set))
            (hsb (make-hash-set inplace-size)))
       (format t "====================================================================================================~%")
-      (format t "    Second time should be a little faster with no consing, third time slowest with consing.~%")
+      (format t "    Second time should be a little faster with less consing, third time slowest with more consing.~%")
       (time
        (dotimes (num inplace-size)
          (hs-ninsert hsa (random max-int))))
@@ -85,7 +85,7 @@
                        :do
                           (hs-ninsert tab (random max-int))))
       (format t "====================================================================================================~%")
-      (format t "    Time should increase linear (by roughly 10x) with no consing.~%")
+      (format t "    Time should increase linear (by roughly 10x).~%")
       (dolist (tab tables)
         (let ((sum 0))
           (time (dohashset (var tab)
