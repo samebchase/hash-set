@@ -3,6 +3,7 @@
 (defpackage #:hash-set
   (:use #:cl)
   (:export #:hash-set
+           #:hs
            #:make-hash-set
            #:list-to-hs
            #:hs-to-list
@@ -32,6 +33,10 @@
            #:hs-map
            #:hs-filter
            #:dohashset
+
+           #:hs-first
+           #:hs-pop
+           #:hs-npop
 
            #:hs-count
 

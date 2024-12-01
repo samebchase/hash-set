@@ -84,7 +84,7 @@
 
 (test hs-nremove-if-not
   (let ((hash-set (list-to-hs (alexandria:iota 10))))
-    (hs-nremove-if #'oddp hash-set)
+    (hs-nremove-if-not #'oddp hash-set)
     (is (hs-equal hash-set
                   (list-to-hs (alexandria:iota 5 :start 1 :step 2))))))
 
@@ -123,7 +123,7 @@
 (test hs-union
   (is (hs-equal (hs-union (list-to-hs ())
                           (list-to-hs ()))
-                (list-to-hs ())))                
+                (list-to-hs ())))
   (is (hs-equal (hs-union (list-to-hs '(0 1 2 3))
                           (list-to-hs '(4 5 6 7)))
                 (list-to-hs (alexandria:iota 8)))))
@@ -212,10 +212,39 @@
                                  (list-to-hs '(4 5 6 7)))))
 
 (test hs-powerset
-  (is (hs-equal (hs-powerset (list-to-hs '(1 2 3)))
+  ;; This is clunky but equal comparison fails on hash-sets...
+  ;; Really we need the underlying hash-table to use hs-equal.
+  ;; But for now, break out the inner sets to lists that work with equal comparison
+  (is (hs-equal (list-to-hs (sort  (mapcar (lambda (lst) (sort lst #'<))(mapcar #'hs-to-list (hs-to-list (hs-powerset (hs 1 2 3))))) #'< :key #'length))
                 (list-to-hs '(NIL (1) (2) (1 2) (3) (1 3) (2 3) (1 2 3)))))
-  (is (hs-equal (hs-powerset (list-to-hs '()))
+
+
+  (is (hs-equal (list-to-hs (mapcar #'hs-to-list (hs-to-list (hs-powerset (hs)))))
                 (list-to-hs '(())))))
+
+(test hs-pop
+  (flet ((check-pop (old-set new-set value)
+           (is (hs-memberp old-set value))
+           (is (not (hs-memberp new-set value)))
+           (is (= 1
+                  (- (hs-count old-set)
+                     (hs-count new-set))))))
+    (let* ((original (hs 1 2 3 4 5))
+           (original-size (hs-count original)))
+      (loop
+        :with popped-value :and new-set
+        :for current-set = original :then new-set
+        :until (zerop (hs-count current-set))
+        :do (setf (values popped-value new-set) (hs-pop current-set))
+            (check-pop current-set new-set popped-value))
+      (is (= original-size (hs-count original))))
+
+    (let ((original (hs 1 2 3 4 5)))
+      (loop
+        :with current-set = original
+        :until (zerop (hs-count current-set))
+        :do (hs-npop current-set))
+      (is (zerop (hs-count original))))))
 
 (test hash-table-hash-set-conversions
   (let ((hash-table (make-hash-table))
@@ -224,9 +253,9 @@
         (tuple-set (make-hash-set)))
 
     (loop :for key :in keys
-       :for value :in values
-       :do (push value (gethash key hash-table))
-       (hs-ninsert tuple-set (cons key value)))
+          :for value :in values
+          :do (setf (gethash key hash-table) value)
+              (hs-ninsert tuple-set (cons key value)))
 
     (is (hs-equal (list-to-hs keys)
                   (hash-keys-to-set hash-table)))

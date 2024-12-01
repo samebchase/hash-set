@@ -36,6 +36,14 @@ HASH-SET> (list-to-hs (alexandria:iota 10))
 #<HASH-SET of count: 10 {1008832EF3}>
 ```
 
+##### hs : ```&rest elements -> hash-set```
+Convenience wrapper around ```list-to-hs``` taking ```&rest``` arguments.
+
+```lisp
+HASH-SET> (hs 1 2 3 4 5)
+#<HASH-SET of count: 5 {1005343743}>
+```
+
 ##### hs-to-list : ```hash-set -> list```
 
 Creates a list containing all the elements of the hash-set.
@@ -191,6 +199,61 @@ of the hash-set.
 
 The elements testing false with the predicate are removed from the
 hash-set.
+
+##### hs-first : ```hash-set -> elt```
+Returns an arbitrary element of hash-set.  This would be the element returned by ```hs-pop```
+or ```hs-npop```
+
+##### hs-pop : ```hash-set -> elt hash-set```
+
+Removes an arbitrary element of hash-set and returns both it and a copy of hash-set
+with the element removed.
+Returns nil on an empty set.
+
+```lisp
+HASH-SET> (hs-pop  (hs 1 2 3 4 5))
+1
+#<HASH-SET of count: 4 {104DE04E43}>
+
+HASH-SET> (hs-pop (hs))
+NIL
+#<HASH-SET of count: 0 {104DE05CD3}>
+```
+
+
+##### hs-npop : ```hash-set -> elt *!hash-set!*```
+Modifying version of ```hs-pop```.
+Removes an arbitrary element of hash-set and returns both it and hash-set with the
+element removed.
+Returns nil on an empty set.
+
+```lisp
+HASH-SET> (let ((hs (hs 1 2 3 4 5)))
+           (hs-npop hs)
+           (hs-npop hs)
+           (hs-npop hs))
+3
+#<HASH-SET of count: 2 {104DF7DDD3}>
+
+HASH-SET> (hs-npop  (hs))
+NIL
+#<HASH-SET of count: 0 {104DE05CD3}>
+```
+
+```hs-pop``` and ```hs-npop``` are useful for iterating over sets when the size can change
+during the loop.
+```lisp
+HASH-SET> (loop :with hs = (list-to-hs (alexandria:iota 10))
+                :while (not (zerop (hs-count hs)))
+                :for removed = (hs-npop hs)
+                :when (evenp removed)
+                  :do
+                     (dotimes (i 3)
+                       (hs-ninsert hs (random 20)))
+                :do
+                   (format t "hs is now: ~a~%" (hs-to-list hs)))
+```
+
 
 #### Set operations
 
